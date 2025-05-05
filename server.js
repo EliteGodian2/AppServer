@@ -3,9 +3,11 @@ import fetchCookie from "fetch-cookie";
 import { CookieJar } from "tough-cookie";
 import { JSDOM } from "jsdom";
 import express from "express";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const login = async (username, password) => {
   const cookieJar = new CookieJar();
@@ -175,20 +177,25 @@ const login = async (username, password) => {
 };
 
 app.post("/login", async (req, res) => {
+  console.log("Received login request:", req.body); // Log incoming request
+
   const { username, password } = req.body;
   try {
     const data = await login(username, password);
+    console.log("Login success:", data); // Log success
     res.json({
       success: true,
       data,
     });
   } catch (error) {
+    console.error("Login failed:", error.message); // Log error
     res.json({
       success: false,
       message: error.message,
     });
   }
 });
+
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
