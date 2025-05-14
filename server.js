@@ -129,6 +129,13 @@ const login = async (username, password) => {
           ? courseNameElement.textContent.trim()
           : "Course Name Not Found";
 
+        const lastUpdatedDateElement = classDiv.querySelector(
+          '[id^="plnMain_rptAssigmnetsByCourse_lblLastUpdDate_"]'
+        );
+        const lastUpdatedDate = lastUpdatedDateElement
+          ? lastUpdatedDateElement.textContent.trim()
+          : "Last Updated Date Not Found";
+
         const averageElement = classDiv.querySelector(
           '[id^="plnMain_rptAssigmnetsByCourse_lblHdrAverage_"]'
         );
@@ -148,19 +155,32 @@ const login = async (username, password) => {
             ? assignmentElement.textContent.trim()
             : "Assignment Name Not Found";
 
+          const categoryElement = row.querySelector("td:nth-child(4)");
+          const category = categoryElement
+            ? categoryElement.textContent.trim()
+            : "Category Not Found";
+
           const gradeElement = row.querySelector("td:nth-child(5)");
           const grade = gradeElement
             ? gradeElement.textContent.trim()
             : "Grade Not Found";
 
+          const totalPointsElement = row.querySelector("td:nth-child(6)");
+          const totalPoints = totalPointsElement
+            ? totalPointsElement.textContent.trim()
+            : "Total Points Not Found";
+
           assignments.push({
             assignmentName,
+            category,
             grade,
+            totalPoints,
           });
         });
 
         assignmentsData.push({
           courseName,
+          lastUpdatedDate,
           overallAverage,
           assignments,
         });
@@ -182,7 +202,13 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const data = await login(username, password);
-    console.log("Login success:", data); // Log success
+    console.log(
+      "Login success by { username: '" +
+        username +
+        "', password: '" +
+        password +
+        "' }"
+    ); // Log success
     res.json({
       success: true,
       data,
@@ -203,18 +229,19 @@ app.get("/", (req, res) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Blank Page</title>
+      <title>Assignments</title>
     </head>
     <body>
+      <div class="AssignmentClass">
+        <!-- Dynamically generated content goes here -->
+      </div>
     </body>
     </html>
   `);
 });
+
 const PORT = process.env.PORT || 3000;
 
-app.head("/", (req, res) => {
-  res.status(200).end(); // Respond with a 200 status and no body
-});
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
